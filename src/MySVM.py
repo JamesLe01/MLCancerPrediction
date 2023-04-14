@@ -1,17 +1,18 @@
-from sklearn.linear_model import LogisticRegression
+from sklearn import svm
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import f1_score
+from sklearn.preprocessing import StandardScaler
 
-class MyLogisticRegression:
+class MySVM:
     def __init__(self, X_train, X_test, y_train, y_test):
-        self.X_train = X_train  # Design Matrix
-        self.X_test = X_test  # Design Matrix
+        self.X_train = StandardScaler().fit_transform(X_train)  # Design Matrix
+        self.X_test = StandardScaler().fit_transform(X_test)  # Design Matrix
         self.y_train = y_train  # Label
         self.y_test = y_test  # Label
         
-        parameters = {'C': [10**x for x in range(-4, 5)]}
-        self.clf = GridSearchCV(LogisticRegression(max_iter=100000, solver='saga'), param_grid=parameters, n_jobs=-1)
+        parameters = {'C': [0.01, 0.1, 1, 10, 100, 1000]}
+        self.clf = GridSearchCV(svm.LinearSVC(max_iter=100000, loss='hinge'), param_grid=parameters, n_jobs=-1)
     
     def train(self) -> float:
         self.clf.fit(self.X_train, self.y_train)
